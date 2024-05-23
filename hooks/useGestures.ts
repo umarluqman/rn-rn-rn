@@ -75,10 +75,10 @@ export const useGestures = ({
     ({ scale, focalX, translateX, focalY, translateY }) => {
       console.log('---start---');
       console.log('scale', scale);
-      console.log('focalX', focalX);
-      console.log('focalY', focalY);
-      console.log('translateX', translateX);
-      console.log('translateY', translateY);
+      console.log('focal', {focalX, focalY});      
+      console.log('translate', {translateX, translateY});
+      console.log('center', center);
+      console.log('size ', {width, height})
       console.log('---end---');
     }
   );
@@ -265,8 +265,10 @@ export const useGestures = ({
       savedFocal.y.value = focal.y.value;
       initialFocal.x.value = event.focalX;
       initialFocal.y.value = event.focalY;
+      savedTranslate.x.value = translate.x.value;
+      savedTranslate.y.value = translate.y.value;          
     })
-    .onUpdate(event => {
+    .onUpdate(event => {      
       scale.value = clamp(savedScale.value * event.scale, minScale, maxScale);
       focal.x.value =
         savedFocal.x.value +
@@ -274,6 +276,9 @@ export const useGestures = ({
       focal.y.value =
         savedFocal.y.value +
         (center.y - initialFocal.y.value) * (scale.value - savedScale.value);
+        
+      translate.x.value = (scale.value/savedScale.value) * savedTranslate.x.value;
+      translate.y.value = (scale.value/savedScale.value) * savedTranslate.y.value;
     })
     .onEnd((...args) => {
       runOnJS(onPinchEnded)(...args);
