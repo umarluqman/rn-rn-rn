@@ -265,20 +265,14 @@ export const useGestures = ({
       savedFocal.y.value = focal.y.value;
       initialFocal.x.value = event.focalX;
       initialFocal.y.value = event.focalY;
-      savedTranslate.x.value = translate.x.value;
-      savedTranslate.y.value = translate.y.value;          
     })
     .onUpdate(event => {      
       scale.value = clamp(savedScale.value * event.scale, minScale, maxScale);
-      focal.x.value =
-        savedFocal.x.value +
-        (center.x - initialFocal.x.value) * (scale.value - savedScale.value);
-      focal.y.value =
-        savedFocal.y.value +
-        (center.y - initialFocal.y.value) * (scale.value - savedScale.value);
-        
-      translate.x.value = (scale.value/savedScale.value) * savedTranslate.x.value;
-      translate.y.value = (scale.value/savedScale.value) * savedTranslate.y.value;
+      let scaleChangeScale = (scale.value - savedScale.value) / savedScale.value;            
+      let centerOffsetX = savedFocal.x.value + translate.x.value + center.x - initialFocal.x.value;
+      let centerOffsetY = savedFocal.y.value + translate.y.value +  center.y - initialFocal.y.value;
+      focal.x.value = centerOffsetX * scaleChangeScale + savedFocal.x.value;         
+      focal.y.value = centerOffsetY * scaleChangeScale + savedFocal.y.value;        
     })
     .onEnd((...args) => {
       runOnJS(onPinchEnded)(...args);
